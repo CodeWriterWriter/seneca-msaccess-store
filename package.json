@@ -1,0 +1,25 @@
+{
+  "name": "seneca-msaccess-store",
+  "version": "0.0.0",
+  "description": "Seneca store plugin to connect to a microsoft access database",
+  "main": "msaccess-store.js",
+  "scripts": {
+    "test": "node_modules/.bin/mocha",
+    "debug": "node_modules/.bin/mocha --debug-brk"
+  },
+  "author": "Brian Mullan <bmullan91@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "seneca": "~0.6.1",
+    "odbc": "0.6.12",
+    "lodash": "^2.4.1",
+    "node-uuid": "^1.4.2",
+    "moment": "^2.9.0",
+    "node-adodb": "^1.1.0"
+  },
+  "devDependencies": {
+    "seneca": "~0.6.1",
+    "mocha": "^2.1.0",
+    "seneca-store-test": "^0.2.2"
+  }
+}
