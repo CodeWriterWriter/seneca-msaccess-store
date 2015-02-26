@@ -5,7 +5,8 @@
   "main": "msaccess-store.js",
   "scripts": {
     "pretest": "git checkout test/TestDB.accdb && echo *** fresh test db! ***",
-    "test": "node_modules/.bin/mocha"
+    "test": "node_modules/.bin/mocha",
+    "debug": "node_modules/.bin/mocha --debug-brk"
   },
   "author": "Brian Mullan <bmullan91@gmail.com>",
   "license": "MIT",

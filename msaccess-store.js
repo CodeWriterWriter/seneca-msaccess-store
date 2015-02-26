@@ -10,17 +10,12 @@ var uuid = require('node-uuid');
 var moment = require("moment");
 
 
+//lib modules
+var makeEntity = require('./lib/entityFactory');
+
 var NAME = "msaccess-store";
 var MIN_WAIT = 16;
 var MAX_WAIT = 65336;
-
-// TODO: Refactor all this stuff in a separate module...
-var SENECA_TYPE_COLUMN = 'seneca';
-var OBJECT_TYPE = 'o';
-var ARRAY_TYPE = 'a';
-var DATE_TYPE = 'd';
-var BOOLEAN_TYPE   = 'b';
-var NUMBER_TYPE   = 'n';
 
 module.exports = function(opts) {
 
@@ -221,7 +216,7 @@ module.exports = function(opts) {
         db.query(query, function(err, res, fields) {
 
           if (!error(args, err, cb)) {
-            var ent = makeent(qent, res[0]);
+            var ent = makeEntity.fromExtraction(qent, res[0]);
             seneca.log(args.tag$, 'load', ent);
             cb(null, ent);
           }
@@ -240,7 +235,7 @@ module.exports = function(opts) {
 
           if (!error(query, err, cb)) {
             res.forEach(function (row) {
-              var ent = makeent(qent, row);
+              var ent = makeEntity.fromExtraction(qent, row);
 
               list.push(ent); //this should be a map function
             });
@@ -323,7 +318,7 @@ module.exports = function(opts) {
       var w = {};
       var qok = fixquery(qent, q);
 
-      for (var p in qok) {
+      for (var p in qok) { // why do this?
         w[p] = qok[p];
       }
       return w;
@@ -335,7 +330,7 @@ module.exports = function(opts) {
     var selectStatement = function(qent, q) {
       var table = tablename(qent);
       var params = [];
-      var w = whereargs(makeentp(qent), q);
+      var w = whereargs(makeEntity.forInsertion(qent), q);
       var wherestr = '';
 
       if (!_.isEmpty(w)) {
@@ -376,7 +371,7 @@ module.exports = function(opts) {
     var deleteStatement = function(qent, q) {
       var table = tablename(qent);
       var params = [];
-      var w = whereargs(makeent(qent), q);
+      var w = whereargs(makeEntity.fromExtraction(qent), q);
       var wherestr = '';
 
       if (!_.isEmpty(w)) {
@@ -396,7 +391,7 @@ module.exports = function(opts) {
       var setargs = [];
       var values = [];
       var p, query, entp, id;
-      entp = makeentp(ent);
+      entp = makeEntity.forInsertion(ent);
 
       for( p in entp ) {
         if ( p !== 'id' ) {
@@ -420,7 +415,7 @@ module.exports = function(opts) {
       var inputs = [];
       var p, query, entp;
 
-      entp = makeentp(ent);
+      entp = makeEntity.forInsertion(ent);
 
       for ( p in entp ) {
         columns.push(p);
@@ -430,137 +425,26 @@ module.exports = function(opts) {
       return query;
     }
 
-    function addquote(name) {
-      return "'" + name + "'";
-    }
-
-    /**
-    * //date string formats are listed here https://support.office.microsoft.com/en-gb/article/Format-Property---DateTime-Data-Type-3251a423-3dd7-446e-be65-c7293eddbb43?ui=en-US&rs=en-GB&ad=GB
-    */
-    function getDateString(date) {
-      //@TODO make this configurable 
-
-      var myDate  = moment(date);
-      return myDate.format("MM/DD/YYYY hh:mm:ss A"); // test db uses general date.
-    }
-
-  var makeentp = function(ent) {
-    var entp   = {};
-    var type   = {};
-    var fields = ent.fields$();
-
-    fields.forEach(function(field){
-
-      if( _.isNumber( ent[field ]) ) {
-        type[field] = NUMBER_TYPE;
-
-        //TODO
-        //access can only go to 15 decimal places
-        //trim off the rest.
-        //or coerce into a number?
-
-        entp[field] = ent[field];
-      }
-      else if( _.isDate( ent[field ]) ) {
-        type[field] = DATE_TYPE;
-        //test db uses 'short date' as its format - MM/DD/YYY
-        entp[field] = addquote(getDateString(ent[field ]));
-      }
-      else if( _.isArray( ent[field] ) ) {
-        type[field] = ARRAY_TYPE;
-        entp[field] = addquote(JSON.stringify(ent[field]));
-      }
-      else if( _.isObject( ent[field] ) ) {
-        type[field] = OBJECT_TYPE;
-        entp[field] = addquote(JSON.stringify(ent[field]));
-      }
-      // Sybase supports only -1 true, 0 = false
-      else if( _.isBoolean( ent[field] ) ) {
-        type[field] = BOOLEAN_TYPE;
-        entp[field] = ent[field] ? -1 : 0; //see http://stackoverflow.com/questions/8827447/why-is-yes-a-value-of-1-in-ms-access-database
-      }
-      else if( _.isUndefined( ent[field] ) ) {
-        entp[field] = null;
-      }
-      else {
-        entp[field] = addquote(ent[field]);
-      }
-
-      //check for reserved words
-      //http://support.microsoft.com/kb/286335
-
-      //hardcoded test example where 'int' is used as a column name
-      if(field === 'int') {
-        delete entp[field];
-        entp['[int]'] = ent[field];
-      }
-
-
-    });
-
-    if ( !_.isEmpty(type) ){
-      entp[SENECA_TYPE_COLUMN] = addquote(JSON.stringify(type));
-    }
-
-    return entp;
-  };
-
   /**
    * With numbers we must NOT use ' around where condition params.
    */
   var getWhereCond = function(field) {
 
       if( _.isNumber(field) ) {
-        return field;
+        //edge case
+        var ns = field.toString();
+
+        if(ns.length > 28 || (ns.indexOf('.') !== -1 && ns.split('.')[1].length > 14)) {
+          return "'" + field + "'";
+        } else {
+          return field;
+        }
+
       } else if( _.isBoolean(field) ) {
         return field ? 1 : 0;
       } else {
-        return addquote(field);
+        return "'" + field + "'";
       }
-  };
-
-  var makeent = function(ent,row) {
-
-    if (!row) {
-      return null;
-    }
-
-    var entp       = {};
-    var senecatype = {};
-    var fields      = _.keys(row);
-
-    if( !_.isUndefined(row[SENECA_TYPE_COLUMN]) && !_.isNull(row[SENECA_TYPE_COLUMN]) ){
-      senecatype = JSON.parse( row[SENECA_TYPE_COLUMN] );
-    }
-
-
-    if( !_.isUndefined(ent) && !_.isUndefined(row) ) {
-      fields.forEach(function(field){
-
-        if (SENECA_TYPE_COLUMN != field){
-          if( _.isUndefined( senecatype[field]) ) {
-            entp[field] = row[field];
-          }
-          else if (senecatype[field] == OBJECT_TYPE){
-            entp[field] = JSON.parse(row[field]);
-          }
-          else if (senecatype[field] == ARRAY_TYPE){
-            entp[field] = JSON.parse(row[field]);
-          }
-          else if (senecatype[field] == DATE_TYPE){
-            entp[field] = row[field];
-          }
-          else if (senecatype[field] == BOOLEAN_TYPE){
-            entp[field] = ( row[field] == '1' );
-          } else {
-            // Other (numbers)
-            entp[field] = row[field];
-          }
-        }
-      });
-    }
-
-    return ent.make$(entp);
   };
 
   var fixquery = function (entp, q) {
