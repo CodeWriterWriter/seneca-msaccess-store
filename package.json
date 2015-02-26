@@ -5,6 +5,7 @@
   "main": "msaccess-store.js",
   "scripts": {
     "pretest": "git checkout test/TestDB.accdb && echo *** fresh test db! ***",
+    "posttest": "git checkout test/TestDB.accdb && echo *** reverting test db to orginal state ***",
     "test": "node_modules/.bin/mocha",
     "debug": "node_modules/.bin/mocha --debug-brk"
   },
