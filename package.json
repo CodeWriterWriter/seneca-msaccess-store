@@ -4,8 +4,8 @@
   "description": "Seneca store plugin to connect to a microsoft access database",
   "main": "msaccess-store.js",
   "scripts": {
-    "test": "node_modules/.bin/mocha",
-    "debug": "node_modules/.bin/mocha --debug-brk"
+    "pretest": "git checkout test/TestDB.accdb && echo *** fresh test db! ***",
+    "test": "node_modules/.bin/mocha"
   },
   "author": "Brian Mullan <bmullan91@gmail.com>",
   "license": "MIT",

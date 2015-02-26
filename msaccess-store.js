@@ -453,6 +453,12 @@ module.exports = function(opts) {
 
       if( _.isNumber( ent[field ]) ) {
         type[field] = NUMBER_TYPE;
+
+        //TODO
+        //access can only go to 15 decimal places
+        //trim off the rest.
+        //or coerce into a number?
+
         entp[field] = ent[field];
       }
       else if( _.isDate( ent[field ]) ) {
