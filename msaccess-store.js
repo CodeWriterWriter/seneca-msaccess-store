@@ -29,7 +29,9 @@ function configure(opts, cb) {
     conf = opts.connection; // can be string or config object
   }
 
-  connectionPool.connect(conf, function(err) {
+  connectionPool.connect(conf, function(err, db) {
+
+    //TODO db.close 
 
     if (!error({tag$: 'init'}, err, cb)) {
       if (err) {
@@ -42,6 +44,12 @@ function configure(opts, cb) {
       seneca.log({tag$: 'init'}, 'ODBC Connection open');
       cb(null, store);
     }
+
+    if(db) {
+      //release the connection
+      db.close();
+    }
+
   });
 }
 
