@@ -15,24 +15,16 @@ var store;
  * Create the connection to the db, report back to seneca.
  *
  * @method configure
- * @param opts {Object | String} The complete connection string (https://www.connectionstrings.com/access/) or configuration opts
+ * @param opts {Object} store config options
+ * @param opts.connection {String | Object} The complete connection string (https://www.connectionstrings.com/access/) or configuration opts
+ * @param [opts.pool] {Object} config options to pass directly to generic-pool
  * @param cb {Function} The callback
  */
 function configure(opts, cb) {
-  assert(opts);
+  assert(opts.connection);
   assert(cb);
 
-  // If opts is a "string" -> ok, otherwise opts is an Object
-  // and we use the "connection" property
-  var conf = 'string' == typeof(opts) ? opts : null;
-  if (!conf) {
-    conf = opts.connection; // can be string or config object
-  }
-
-  connectionPool.connect(conf, function(err, db) {
-
-    //TODO db.close 
-
+  connectionPool.connect(opts, function(err, db) {
     if (!error({tag$: 'init'}, err, cb)) {
       if (err) {
         cb(err);
@@ -49,7 +41,6 @@ function configure(opts, cb) {
       //release the connection
       db.close();
     }
-
   });
 }
 
