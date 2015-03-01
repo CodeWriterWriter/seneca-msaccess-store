@@ -6,71 +6,65 @@ var assert = require("assert");
 var connectionPool = require('./lib/connectionPool');
 var error = require('./lib/error');
 
-var NAME = "msaccess-store";
 var MIN_WAIT = 16;
 var MAX_WAIT = 65336;
+var seneca;
+var store;
+
+/**
+ * Create the connection to the db, report back to seneca.
+ *
+ * @method configure
+ * @param opts {Object | String} The complete connection string (https://www.connectionstrings.com/access/) or configuration opts
+ * @param cb {Function} The callback
+ */
+function configure(opts, cb) {
+  assert(opts);
+  assert(cb);
+
+  // If opts is a "string" -> ok, otherwise opts is an Object
+  // and we use the "connection" property
+  var conf = 'string' == typeof(opts) ? opts : null;
+  if (!conf) {
+    conf = opts.connection; // can be string or config object
+  }
+
+  connectionPool.connect(conf, function(err) {
+
+    if (!error({tag$: 'init'}, err, cb)) {
+      if (err) {
+        cb(err);
+      } else {
+        seneca.log({tag$: 'init'}, 'ODBC Connection open');
+        cb(null, store);
+      }
+    } else {
+      seneca.log({tag$: 'init'}, 'ODBC Connection open');
+      cb(null, store);
+    }
+  });
+}
 
 
 /**
- *
+ * @TODO document opts - add to readme.
  *
  *
  *
  */
 module.exports = function(opts) {
 
-    var seneca = this;
-    var desc;
-    var minwait;
-    var spec;
+    seneca = this;
+    store = require('./lib/store')(seneca);
 
     opts.minwait = opts.minwait || MIN_WAIT;
     opts.maxwait = opts.maxwait || MAX_WAIT;
 
-    /**
-     * Configure the store - create a new store specific connection object
-     *
-     * @param spec {Object | String} The complete connection string (https://www.connectionstrings.com/access/) or configuration spec
-     * @TODO handle object spec
-     * 
-     * @param cb {Function} The callback
-     * cb - callback
-     */
-    function configure(spec, cb) {
-      assert(spec); //is assert a good test?
-      assert(cb);
-
-      // If spec is a "string" -> ok, otherwise spec is an Object
-      // and we use the "connection" property
-      var conf = 'string' == typeof(spec) ? spec : null;
-      if (!conf) {
-        conf = spec.connection;
-      }
-
-      connectionPool.connect(conf, function(err) {
-
-        if (!error({tag$: 'init'}, err, cb)) {
-          if (err) {
-            cb(err);
-          } else {
-            seneca.log({tag$: 'init'}, 'ODBC Connection open');
-            cb(null, store);
-          }
-        } else {
-          seneca.log({tag$: 'init'}, 'ODBC Connection open');
-          cb(null, store);
-        }
-      });
-    }
-
-    var store = require('./lib/store')(seneca);
-
+    var meta = seneca.store.init(seneca, opts, store);
 
     /**
      * initialization
      */
-    var meta = seneca.store.init(seneca, opts, store);
-    desc = meta.desc;
     seneca.add({init: store.name, tag: meta.tag}, function(args, done) {
         //init the connection
         configure(opts, function(err) {
@@ -79,13 +73,16 @@ module.exports = function(opts) {
               code: 'entity/configure',
               store: store.name,
               error: err,
-              desc: desc
+              desc: meta.desc
             }, done);
           } else {
-            done(); //any args???
+            done();
           }
         });
       });
 
-    return {name: store.name, tag: meta.tag};
+    return {
+      name: store.name, 
+      tag: meta.tag
+    };
   };
