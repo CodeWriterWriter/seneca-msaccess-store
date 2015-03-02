@@ -2,7 +2,7 @@
 
 Based on seneca-mysql-store, seneca-oracle-store and seneca-sybase-store.
 
-This project uses odbc to connect to Microsoft Access. Currently the odbc driver options for OSX/Linux to communicate to Microsoft Access is [grim](http://stackoverflow.com/questions/5742322/connecting-to-access-database-from-linux), therefore this module will only work in a Windows enviroment.
+This project uses odbc to connect to Microsoft Access. Currently the odbc driver options for OSX/Linux to communicate to Microsoft Access are [grim](http://stackoverflow.com/questions/5742322/connecting-to-access-database-from-linux), therefore this module will only work in a Windows enviroment.
 
 Tested on:
 

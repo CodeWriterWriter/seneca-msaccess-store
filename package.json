@@ -1,7 +1,7 @@
 {
   "name": "seneca-msaccess-store",
-  "version": "0.0.1",
-  "description": "Seneca store plugin to connect to a microsoft access database",
+  "version": "0.0.2",
+  "description": "Seneca store plugin to connect to a Microsoft Access database",
   "main": "msaccess-store.js",
   "scripts": {
     "pretest": "git checkout test/TestDB.accdb && echo *** fresh test db! ***",
@@ -10,6 +10,16 @@
     "debug": "node_modules/.bin/mocha --debug-brk"
   },
   "author": "Brian Mullan <bmullan91@gmail.com>",
+  "keywords": [
+    "microsoft",
+    "access",
+    "microsoft access",
+    "odbc",
+    "seneca",
+    "seneca store",
+    "seneca msaccess",
+    "seneca msaccess store"
+  ],
   "license": "MIT",
   "repository": {
     "type": "git",
