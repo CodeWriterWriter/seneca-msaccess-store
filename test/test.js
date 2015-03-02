@@ -1,10 +1,13 @@
 "use strict";
 
+var _ = require('lodash');
 var path = require('path');
 var seneca = require('seneca');
 var assert = require('assert');
 var shared = require('seneca-store-test');
 var fs = require('fs');
+
+var extra = require('./extra');
 
 var si = seneca({
   // uncomment when debugging
@@ -38,6 +41,11 @@ describe('msaccess-store tests', function () {
   //   testcount++;
   //   shared.sqltest(si, done);
   // });
+
+  it('seneca-store-test::extra', function (done) {
+    testcount++;
+    extra.test(si, done);
+  });
 
   it('seneca-store-test::closetest', function (done) {
     shared.closetest(si, testcount, done);
