@@ -11,6 +11,10 @@
   },
   "author": "Brian Mullan <bmullan91@gmail.com>",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/bmullan91/seneca-msaccess-store.git"
+  },
   "dependencies": {
     "seneca": "~0.6.1",
     "odbc": "0.6.12",
