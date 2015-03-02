@@ -69,6 +69,10 @@ seneca.use('msaccess-store', {
   }
 });
 
+/**
+ * Creating and saving an 'apple' entity
+ */
+
 seneca.ready(function(){
   var apple = seneca.make$('fruit')
   apple.name  = 'Pink Lady'
@@ -82,4 +86,7 @@ seneca.ready(function(){
 
 ## TODO
 
-- sqltests from seneca store tests
+- detect local database changes to /test/TestDB.accdb and prevent tests running.
+- Tidy up entityFactory
+- sql, sort and limit tests from seneca store tests
+- native tests, specific to access
