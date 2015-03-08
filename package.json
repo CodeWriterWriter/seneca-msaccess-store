@@ -1,6 +1,6 @@
 {
   "name": "seneca-msaccess-store",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Seneca store plugin to connect to a Microsoft Access database",
   "main": "msaccess-store.js",
   "scripts": {
