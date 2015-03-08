@@ -44,12 +44,15 @@ function configure(opts, cb) {
   });
 }
 
-
 /**
- * @TODO document opts - add to readme.
+ * The seneca store plugin. This initialises the store and adds the store init command.
  *
- *
- *
+ * @param opts {Object} The config options passed to configure the plugin
+ * @param opts.connection {String | Object} The complete connection string (https://www.connectionstrings.com/access/) or configuration opts
+ * @param [opts.pool] {Object} config options to pass directly to generic-pool
+ * @param [opts.minwait] {Number} Minimum duration in milliseconds to wait before trying to reconnect
+ * @param [opts.maxwait] {Number} Maximum duration to wait, before err'ing out
+ * return {Object} Store name and meta tag
  */
 module.exports = function(opts) {
 
