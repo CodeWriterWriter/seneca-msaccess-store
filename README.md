@@ -91,7 +91,6 @@ seneca.ready(function(){
 
 ## TODO
 
-- Detect local database changes to /test/TestDB.accdb and prevent tests running.
 - Tidy up entityFactory
 - Sql, sort and limit tests from seneca store tests
 - Native tests, specific to ms access

@@ -4,8 +4,8 @@
   "description": "Seneca store plugin to connect to a Microsoft Access database",
   "main": "msaccess-store.js",
   "scripts": {
-    "pretest": "git checkout test/TestDB.accdb && echo *** fresh test db! ***",
-    "posttest": "git checkout test/TestDB.accdb && echo *** reverting test db to orginal state ***",
+    "pretest": "sh ./scripts/pre-test.sh",
+    "posttest": "sh ./scripts/post-test.sh",
     "test": "node_modules/.bin/mocha",
     "debug": "node_modules/.bin/mocha --debug-brk"
   },
