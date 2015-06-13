@@ -1,5 +1,7 @@
 # seneca-msaccess-store
 
+[![Join the chat at https://gitter.im/bmullan91/seneca-msaccess-store](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/bmullan91/seneca-msaccess-store?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 Based on seneca-mysql-store, seneca-oracle-store and seneca-sybase-store.
 
 This project uses odbc to connect to Microsoft Access. Currently the odbc driver options for OSX/Linux to communicate to Microsoft Access are [grim](http://stackoverflow.com/questions/5742322/connecting-to-access-database-from-linux), therefore this module will only work in a Windows enviroment.
