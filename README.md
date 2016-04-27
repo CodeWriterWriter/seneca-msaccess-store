@@ -1,3 +1,6 @@
+# Project Status :
+This plugin is not being supported by the seneca organization,  and is no longer proven to work.
+If you are interested in maintaining this project, please contact us via the issue queue.
 # seneca-msaccess-store
 
 [![Join the chat at https://gitter.im/bmullan91/seneca-msaccess-store](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/bmullan91/seneca-msaccess-store?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
